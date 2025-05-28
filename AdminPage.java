@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.BorderFactory;
@@ -60,7 +62,7 @@ public class AdminPage extends JFrame{
                 patientsLabel.add(new JLabel("Date", JLabel.CENTER));
                 container.add(patientsLabel);
                 
-                displayPatient();
+                displayPatients();
                 
                 JPanel doctorsHeader = new JPanel();
                 doctorsHeader.add(new JLabel("Doctors"));
@@ -104,11 +106,10 @@ public class AdminPage extends JFrame{
                         
                 });
                 
-                JButton eraseAllPatients = new JButton("Remov Patients");
+                JButton eraseAllPatients = new JButton("Remove Patients");
                 eraseAllPatients.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 eraseAllPatients.addActionListener(e -> {
-                        System.out.println(3);
-                        
+                        removeAllPatients();
                 });
 
                 JButton addNewDoctor = new JButton("New Doctor");
@@ -138,6 +139,30 @@ public class AdminPage extends JFrame{
                 }
                 
                 setVisible(true);
+        }
+
+        private void reset(String info) {
+                try (FileWriter writer = new FileWriter("patients\\" + info + ".txt")) {
+                        writer.write("");
+                } 
+                catch (IOException e) {
+                        System.out.println(e);
+                }
+        }
+
+        private void removeAllPatients() {
+                reset("names");
+                reset("ages");
+                reset("contacts");
+                reset("appointment-dates");
+                reset("appointed-doctor");
+
+                patients.clear();
+
+                getPatientsInfo();
+                displayPatients();
+                revalidate();
+                repaint();
         }
 
         private ArrayList<String> getData(String folder, String location) {
@@ -182,7 +207,7 @@ public class AdminPage extends JFrame{
                 }
         }
 
-        private void displayPatient() {
+        private void displayPatients() {
                 for (int i = 0; i < patients.size(); i++) {
                         container.add(new DoctorsPage.AppointmentPanel(patients.get(i)));
                 }
