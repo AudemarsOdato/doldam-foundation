@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -168,16 +169,19 @@ public class BookingPage extends JFrame{
         private String[] getDates() {
                 LocalDate localDate = LocalDate.now();
                 String month = localDate.getMonth().toString();
-                int dateTomorrow = localDate.plusDays(1).getDayOfMonth();
-                int dateAfterTomorrow = localDate.plusDays(2).getDayOfMonth();
-                int thirdDateAfterTom = localDate.plusDays(3).getDayOfMonth();
 
-                String[] dates = {
-                                month + " " + dateTomorrow,
-                                month + " " + dateAfterTomorrow,
-                                month + " " + thirdDateAfterTom,
-                };
-                return  dates;
+                ArrayList<String> dates = new ArrayList<>();
+
+                for (int i = 0; i < 10; i++) {
+                        
+                        if (localDate.plusDays(i).getDayOfMonth() < localDate.plusDays(i - 1).getDayOfMonth()) {
+                                month = localDate.getMonth().plus(1).toString();
+                        }
+                        
+                        dates.add(month + " " + localDate.plusDays(i).getDayOfMonth());
+                }
+
+                return dates.toArray(new String[0]);
         }
 
         private void handleinput() {

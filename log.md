@@ -1,5 +1,37 @@
 # logs
 
+## May 29, 2025
+What I Did
+- Added functionalities in admin side panel buttons for patient and doctor display
+- Fixed issues in updating patients display after erasing all records
+- Fixed and improved the booking page's date input
+
+What's Next
+- Add functionality in adding and removing a doctor
+
+Quick Insight
+- Use JOptionPane gui for adding and removing doctor buttons
+```
+// Find the doctor to delete
+Doctor doctorToDelete = null;
+for (Doctor doctor : allDoctors) {
+    if (doctor.getName().equals("Name of doctor to delete")) {
+        doctorToDelete = doctor;
+        break;
+    }
+}
+
+// Remove the doctor from the list
+if (doctorToDelete != null) {
+    allDoctors.remove(doctorToDelete);
+}
+
+allDoctors.removeIf(doctor -> doctor.getName().equals("Name of doctor to delete"));
+```
+
+What Broke or Got Weird
+- The patients display table goes weird when empty. Try unpacking it
+
 ## May 26, 2025
 What I Did
 - Added side panels for admin and doctors page

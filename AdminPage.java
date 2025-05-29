@@ -23,10 +23,9 @@ public class AdminPage extends JFrame{
         JPanel container = new JPanel();
         JPanel sidePanel = new JPanel();
 
-        // create an array
-        // get data
-        // group data per patient and doctor
-        // display infos
+        JPanel patientsContainer = new JPanel();
+        JPanel doctorsContainer = new JPanel();
+
         ArrayList<Patient> patients = new ArrayList<>();
         ArrayList<Doctor> allDoctors = new ArrayList<>();
 
@@ -41,7 +40,7 @@ public class AdminPage extends JFrame{
                 getPatientsInfo();
                 getDoctorsInfo();
                 
-                container.setLayout(new GridLayout(patients.size() + allDoctors.size() + 6, 1, 10, 10));
+                container.setLayout(new FlowLayout());
 
                 sidePanel.setLayout(new FlowLayout());
                 sidePanel.setAlignmentX(CENTER_ALIGNMENT);
@@ -49,10 +48,13 @@ public class AdminPage extends JFrame{
                 sidePanel.setPreferredSize(new Dimension((int)(getWidth() * 0.2), sidePanel.getHeight()));
                 add(sidePanel, BorderLayout.WEST);
 
+                patientsContainer.setLayout(new GridLayout(patients.size() + 6, 1, 10, 10));
+                container.add(patientsContainer);
+
                 JPanel patientsHeader = new JPanel();
                 patientsHeader.add(new JLabel("Patients"));
                 patientsHeader.setLayout(new FlowLayout(FlowLayout.LEADING, 10, 10));
-                container.add(patientsHeader);
+                patientsContainer.add(patientsHeader);
                 
                 JPanel patientsLabel = new JPanel();
                 patientsLabel.setLayout(new GridLayout(1, 4, 10, 10));
@@ -60,20 +62,24 @@ public class AdminPage extends JFrame{
                 patientsLabel.add(new JLabel("Age", JLabel.CENTER));
                 patientsLabel.add(new JLabel("Contact", JLabel.CENTER));
                 patientsLabel.add(new JLabel("Date", JLabel.CENTER));
-                container.add(patientsLabel);
+                patientsContainer.add(patientsLabel);
                 
                 displayPatients();
+
+                doctorsContainer.setLayout(new GridLayout(allDoctors.size() + 6, 1, 10, 10));
+                doctorsContainer.setVisible(false);
+                container.add(doctorsContainer);
                 
                 JPanel doctorsHeader = new JPanel();
                 doctorsHeader.add(new JLabel("Doctors"));
                 doctorsHeader.setLayout(new FlowLayout(FlowLayout.LEADING, 10, 10));
-                container.add(doctorsHeader);
+                doctorsContainer.add(doctorsHeader);
                 
                 JPanel doctorsLabel = new JPanel();
                 doctorsLabel.setLayout(new GridLayout(1, 2, 10, 10));
                 doctorsLabel.add(new JLabel("Name", JLabel.CENTER));
                 doctorsLabel.add(new JLabel("Username", JLabel.CENTER));
-                container.add(doctorsLabel);
+                doctorsContainer.add(doctorsLabel);
                 
                 displayDoctor();
                 
@@ -96,20 +102,23 @@ public class AdminPage extends JFrame{
                 JButton allPatientsButton = new JButton("Patients");
                 allPatientsButton.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 allPatientsButton.addActionListener(e -> {
-                        System.out.println(1);
+                        doctorsContainer.setVisible(false);
+                        patientsContainer.setVisible(true);
                 });
 
                 JButton allDoctorsButton = new JButton("Doctors");
                 allDoctorsButton.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 allDoctorsButton.addActionListener(e -> {
-                        System.out.println(2);
-                        
+                        patientsContainer.setVisible(false);
+                        doctorsContainer.setVisible(true);
                 });
                 
                 JButton eraseAllPatients = new JButton("Remove Patients");
                 eraseAllPatients.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 eraseAllPatients.addActionListener(e -> {
                         removeAllPatients();
+                        new AdminPage();
+                        dispose();
                 });
 
                 JButton addNewDoctor = new JButton("New Doctor");
@@ -122,7 +131,7 @@ public class AdminPage extends JFrame{
                 JButton removeDoctor = new JButton("Remove Doctor");
                 removeDoctor.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 removeDoctor.addActionListener(e -> {
-                        System.out.println(5);
+                        System.out.println(allDoctors);
                         
                 });
                 
@@ -158,11 +167,6 @@ public class AdminPage extends JFrame{
                 reset("appointed-doctor");
 
                 patients.clear();
-
-                getPatientsInfo();
-                displayPatients();
-                revalidate();
-                repaint();
         }
 
         private ArrayList<String> getData(String folder, String location) {
@@ -209,13 +213,13 @@ public class AdminPage extends JFrame{
 
         private void displayPatients() {
                 for (int i = 0; i < patients.size(); i++) {
-                        container.add(new DoctorsPage.AppointmentPanel(patients.get(i)));
+                        patientsContainer.add(new DoctorsPage.AppointmentPanel(patients.get(i)));
                 }
         }
         
         private void displayDoctor() {
                 for (int i = 0; i < allDoctors.size(); i++) {
-                        container.add(new DoctorPanel(allDoctors.get(i)));
+                        doctorsContainer.add(new DoctorPanel(allDoctors.get(i)));
                 }
         }
 
