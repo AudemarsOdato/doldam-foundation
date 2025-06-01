@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,12 +13,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 public class AdminPage extends JFrame{
         JPanel container = new JPanel();
@@ -28,6 +32,8 @@ public class AdminPage extends JFrame{
 
         ArrayList<Patient> patients = new ArrayList<>();
         ArrayList<Doctor> allDoctors = new ArrayList<>();
+
+        JButton addNewDoctor = new JButton("New Doctor");
 
         AdminPage() {
                 setIconImage(new ImageIcon("assets\\icon\\icon.png").getImage());
@@ -44,7 +50,6 @@ public class AdminPage extends JFrame{
 
                 sidePanel.setLayout(new FlowLayout());
                 sidePanel.setAlignmentX(CENTER_ALIGNMENT);
-                sidePanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
                 sidePanel.setPreferredSize(new Dimension((int)(getWidth() * 0.2), sidePanel.getHeight()));
                 add(sidePanel, BorderLayout.WEST);
 
@@ -121,21 +126,24 @@ public class AdminPage extends JFrame{
                         dispose();
                 });
 
-                JButton addNewDoctor = new JButton("New Doctor");
                 addNewDoctor.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 addNewDoctor.addActionListener(e -> {
-                        System.out.println(4);
-                        
+                        addNewDoctor();
                 });
 
                 JButton removeDoctor = new JButton("Remove Doctor");
                 removeDoctor.setPreferredSize(SIDEPANEL_BUTTONSIZE);
                 removeDoctor.addActionListener(e -> {
-                        System.out.println(allDoctors);
-                        
+                        removeDoctor();
                 });
+
+                JLabel sidePanelHeader = new JLabel("Doldam Hospital");
+                sidePanelHeader.setFont(new Font("Arial", Font.PLAIN, 16));
+                sidePanelHeader.setForeground(Color.GRAY);
+                sidePanelHeader.setBorder(BorderFactory.createEmptyBorder(30, 5, 30, 30));
                 
                 Component[] sidePanelComponents = {
+                                        sidePanelHeader,
                                         allPatientsButton,
                                         allDoctorsButton, 
                                         addNewDoctor, 
@@ -150,7 +158,135 @@ public class AdminPage extends JFrame{
                 setVisible(true);
         }
 
-        private void reset(String info) {
+        private void removeDoctor() {
+                String username = JOptionPane.showInputDialog("username");
+                boolean isUsernameExist = false;
+                String[] options = {"Remove", "Cancel"};
+                
+                for (Doctor doctor : allDoctors) {
+                        if (doctor.username.equals(username)) {
+                                isUsernameExist = true;
+                        }
+                }
+
+                
+                if (username != null) {
+                        if (!isUsernameExist) {
+                                JOptionPane.showMessageDialog(this, "username not found");
+                        }
+                        else {
+                                int confirmation = JOptionPane.showOptionDialog(
+                                        this, 
+                                        "Confirm remove?", 
+                                        "Confirm",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.QUESTION_MESSAGE, 
+                                        null, 
+                                        options, 
+                                        options[0]);
+        
+                                if (confirmation == JOptionPane.YES_OPTION) {
+                                        JOptionPane.showMessageDialog(this, "removed: " + username);
+                                        allDoctors.removeIf(doctor -> doctor.username.equals(username));
+
+                                        resetDoctor("names");
+                                        resetDoctor("usernames");
+                                        resetDoctor("keys");
+                                        
+                                        for (Doctor doctor : allDoctors) {
+                                                updateDoctor("names", doctor.name);
+                                                updateDoctor("usernames", doctor.username);
+                                                updateDoctor("keys", doctor.key);
+                                        }
+                                        dispose();
+                                        new AdminPage();
+                                }
+                        }
+                }
+
+
+        }
+
+        private void updateDoctor(String file, String updatedInfo) {
+                try (FileWriter writer = new FileWriter("personel\\doctors\\" + file + ".txt", true)) {
+                        writer.write(updatedInfo + "\n");
+                }
+                catch (IOException ex) {
+                        System.out.println(ex);
+                }
+        }
+
+        private void resetDoctor(String info) {
+                try (FileWriter writer = new FileWriter("personel\\doctors\\" + info + ".txt"))  {
+                        writer.write("");
+                }
+                catch (IOException ex) {
+                        System.out.println(ex);
+                }
+        }
+
+        private void addNewDoctor() {
+                Dimension INPUT_FIELD_SIZE = new Dimension(100, 20);
+
+                JFrame window = new JFrame("New Doctor");
+                window.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+                window.setLocationRelativeTo(addNewDoctor);
+                window.setSize(300, 200);
+
+                JPanel localcontainer = new JPanel();
+                localcontainer.setLayout(new BoxLayout(localcontainer, BoxLayout.Y_AXIS));
+                window.add(localcontainer);
+
+                JLabel nameLabel = new JLabel("Name: ");
+                JLabel usernameLabel = new JLabel("Username: ");
+                JLabel passLabel = new JLabel("Password: ");
+
+                JTextField nameInput = new JTextField();
+                JTextField usernameInput = new JTextField();
+                JTextField passwordInput = new JTextField();
+
+                nameInput.setPreferredSize(INPUT_FIELD_SIZE);
+                usernameInput.setPreferredSize(INPUT_FIELD_SIZE);
+                passwordInput.setPreferredSize(INPUT_FIELD_SIZE);
+
+                JButton addButton = new JButton("Add");
+                addButton.addActionListener(e -> {
+                        boolean isInputEmpty = nameInput.getText().isEmpty() ||
+                                                usernameInput.getText().isEmpty() ||
+                                                passwordInput.getText().isEmpty();
+
+                        if (!isInputEmpty) {
+                                saveNewDoctor(nameInput.getText(), usernameInput.getText(), passwordInput.getText());
+                                new AdminPage();
+                                window.dispose();
+                                dispose();
+                        }
+                });
+
+                Component[] components = {nameLabel, nameInput, usernameLabel, usernameInput, passLabel, passwordInput, addButton};
+                for (Component component : components) {
+                        localcontainer.add(component);
+                }
+
+                window.setVisible(true);
+        }
+
+        private void newDoctor(String info, String folder) {
+                try (FileWriter writer = new FileWriter("personel\\doctors\\" + folder + ".txt", true)) {
+                        writer.write(info + "\n");
+                }
+                catch (IOException ex) {
+                        System.out.println(ex);
+                }
+        }
+
+        private void saveNewDoctor(String name, String username, String pass) {
+                newDoctor(name, "names");
+                newDoctor(username, "usernames");
+                newDoctor(pass, "keys");
+        }
+
+        private void resetPatient(String info) {
                 try (FileWriter writer = new FileWriter("patients\\" + info + ".txt")) {
                         writer.write("");
                 } 
@@ -160,13 +296,27 @@ public class AdminPage extends JFrame{
         }
 
         private void removeAllPatients() {
-                reset("names");
-                reset("ages");
-                reset("contacts");
-                reset("appointment-dates");
-                reset("appointed-doctor");
+                int confirmation = JOptionPane.showConfirmDialog(this, 
+                                        "Erase all patient information? This action cannot be undone.",
+                                        "Confirm",
+                                        JOptionPane.YES_NO_OPTION);
+                
+                if (confirmation == JOptionPane.YES_OPTION) {
+                        resetPatient("names");
+                        resetPatient("ages");
+                        resetPatient("contacts");
+                        resetPatient("appointment-dates");
+                        resetPatient("appointed-doctor");
+                        patients.clear();
 
-                patients.clear();
+                        JOptionPane.showMessageDialog(this, "Erased all patient records.");
+                }
+                else {
+                        JOptionPane.showMessageDialog(this, "Cancelled.");
+
+                }
+
+
         }
 
         private ArrayList<String> getData(String folder, String location) {
@@ -205,9 +355,10 @@ public class AdminPage extends JFrame{
 
                 ArrayList<String> names = usersAndPass.getNames();
                 ArrayList<String> usernames = usersAndPass.getUsernames();
+                ArrayList<String> keys = usersAndPass.getKeys();
 
                 for (int i = 0;i < names.size(); i++) {
-                        allDoctors.add(new Doctor(names.get(i), usernames.get(i)));
+                        allDoctors.add(new Doctor(names.get(i), usernames.get(i), keys.get(i)));
                 }
         }
 
@@ -222,7 +373,6 @@ public class AdminPage extends JFrame{
                         doctorsContainer.add(new DoctorPanel(allDoctors.get(i)));
                 }
         }
-
 
         private class DoctorPanel extends JPanel{
                 DoctorPanel(Doctor doctor) {

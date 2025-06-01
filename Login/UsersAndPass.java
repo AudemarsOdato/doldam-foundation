@@ -30,6 +30,10 @@ public class UsersAndPass {
                 return getData("doctors", "usernames");
         }
 
+        public ArrayList<String> getKeys() {
+                return getData("doctors", "keys");
+        }
+
         private ArrayList<String> getData(String personel, String location) {
                 ArrayList<String> data = new ArrayList<>();
                 try (Scanner scanner = new Scanner(new FileReader("personel" + "\\" + personel + "\\" + location + ".txt"))) {

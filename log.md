@@ -1,5 +1,28 @@
 # logs
 
+## June 1, 2025
+What I Did
+- Fixed the remove a doctor button
+- Added header for the side panel in admin and doctors page
+
+What's Next
+- Compile and submit the project
+- Create a bug protocol, on what to do when stucked in a bug
+
+What Broke or Got Weird
+- Files being doubled when updating it in removing a doctor, caused by a missing dot "." before the txt in the reset function. Thus not reseting it properly
+- The problem of not updating the files properly from the previous day are caused by not appending it. The parameter in filewriter to set the append to true are missing.
+
+## May 31, 2025
+What I Did
+- Added functionality in adding new doctor button
+
+What's Next
+- Finish and fix remove doctor button
+
+What Broke or Got Weird
+- Files being overriden, all doctor infos being removed except the last one instead of just the doctor to be removed
+
 ## May 29, 2025
 What I Did
 - Added functionalities in admin side panel buttons for patient and doctor display

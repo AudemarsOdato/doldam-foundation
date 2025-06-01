@@ -57,7 +57,6 @@ public class LogInPage extends  JFrame{
                         
                         
                         if (userInput.equals("admin")) {
-                                System.out.println("admin");
                                 if (loginInfo.get(userInput).equals(passInput)) {
                                         new AdminPage();
                                         dispose();

@@ -39,7 +39,6 @@ public class DoctorsPage extends JFrame{
 
                 sidePanel.setLayout(new FlowLayout());
                 sidePanel.setAlignmentX(CENTER_ALIGNMENT);
-                sidePanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
                 sidePanel.setPreferredSize(new Dimension((int)(getWidth() * 0.2), sidePanel.getHeight()));
                 add(sidePanel, BorderLayout.WEST);
 
@@ -85,7 +84,12 @@ public class DoctorsPage extends JFrame{
                         dispose();
                 });
 
-                Component[] sidePanelComponets = {bookButton, logOutButton};
+                JLabel sidePanelHeader = new JLabel("Doldam Hospital");
+                sidePanelHeader.setFont(new Font("Arial", Font.PLAIN, 16));
+                sidePanelHeader.setForeground(Color.GRAY);
+                sidePanelHeader.setBorder(BorderFactory.createEmptyBorder(30, 5, 30, 30));
+
+                Component[] sidePanelComponets = {sidePanelHeader, bookButton, logOutButton};
                 for (Component sidePanelButton : sidePanelComponets) {
                         sidePanel.add(sidePanelButton);
                 }
